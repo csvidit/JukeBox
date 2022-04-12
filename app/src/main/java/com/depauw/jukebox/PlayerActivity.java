@@ -13,8 +13,17 @@ import com.depauw.jukebox.databinding.ActivityPlayerBinding;
 
 public class PlayerActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
 
-    ActivityPlayerBinding binding;
-    MediaPlayer md;
+    private ActivityPlayerBinding binding;
+    private MediaPlayer md;
+
+    private static float AVERAGE_RATING_TRACK1 = 0.0f;
+    private static float AVERAGE_RATING_TRACK2 = 0.0f;
+    private static float AVERAGE_RATING_TRACK3 = 0.0f;
+
+    private static int RED_VALUE = 0;
+    private static int GREEN_VALUE = 0;
+    private static int BLUE_VALUE = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +49,6 @@ public class PlayerActivity extends AppCompatActivity implements RadioGroup.OnCh
                 md.start();
                 break;
         }
-        binding.imageviewAlbumCover.setImageResource(R.drawable.track1);
         binding.seekbarRed.setOnSeekBarChangeListener(seekbar_red_changeListener);
         binding.seekbarGreen.setOnSeekBarChangeListener(seekbar_green_changeListener);
         binding.seekbarBlue.setOnSeekBarChangeListener(seekbar_blue_changeListener);
@@ -53,10 +61,10 @@ public class PlayerActivity extends AppCompatActivity implements RadioGroup.OnCh
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             binding.textviewRed.setText(String.valueOf(i));
-            int red = Integer.valueOf(binding.textviewRed.getText().toString());
-            int green = Integer.valueOf(binding.textviewGreen.getText().toString());
-            int blue = Integer.valueOf(binding.textviewBlue.getText().toString());
-            int updatedColor = Color.rgb(red, green, blue);
+            RED_VALUE = Integer.valueOf(binding.textviewRed.getText().toString());
+            GREEN_VALUE = Integer.valueOf(binding.textviewGreen.getText().toString());
+            BLUE_VALUE = Integer.valueOf(binding.textviewBlue.getText().toString());
+            int updatedColor = Color.rgb(RED_VALUE, GREEN_VALUE, BLUE_VALUE);
             binding.constraintlayout.setBackgroundColor(updatedColor);
         }
 
@@ -75,10 +83,10 @@ public class PlayerActivity extends AppCompatActivity implements RadioGroup.OnCh
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             binding.textviewGreen.setText(String.valueOf(i));
-            int red = Integer.valueOf(binding.textviewRed.getText().toString());
-            int green = Integer.valueOf(binding.textviewGreen.getText().toString());
-            int blue = Integer.valueOf(binding.textviewBlue.getText().toString());
-            int updatedColor = Color.rgb(red, green, blue);
+            RED_VALUE = Integer.valueOf(binding.textviewRed.getText().toString());
+            GREEN_VALUE = Integer.valueOf(binding.textviewGreen.getText().toString());
+            BLUE_VALUE = Integer.valueOf(binding.textviewBlue.getText().toString());
+            int updatedColor = Color.rgb(RED_VALUE, GREEN_VALUE, BLUE_VALUE);
             binding.constraintlayout.setBackgroundColor(updatedColor);
         }
 
@@ -97,10 +105,10 @@ public class PlayerActivity extends AppCompatActivity implements RadioGroup.OnCh
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             binding.textviewBlue.setText(String.valueOf(i));
-            int red = Integer.valueOf(binding.textviewRed.getText().toString());
-            int green = Integer.valueOf(binding.textviewGreen.getText().toString());
-            int blue = Integer.valueOf(binding.textviewBlue.getText().toString());
-            int updatedColor = Color.rgb(red, green, blue);
+            RED_VALUE = Integer.valueOf(binding.textviewRed.getText().toString());
+            GREEN_VALUE = Integer.valueOf(binding.textviewGreen.getText().toString());
+            BLUE_VALUE = Integer.valueOf(binding.textviewBlue.getText().toString());
+            int updatedColor = Color.rgb(RED_VALUE, GREEN_VALUE, BLUE_VALUE);
             binding.constraintlayout.setBackgroundColor(updatedColor);
 
         }
@@ -119,9 +127,11 @@ public class PlayerActivity extends AppCompatActivity implements RadioGroup.OnCh
     private SeekBar.OnSeekBarChangeListener seekbar_song_position_changeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            md.pause();
             double seekFrac = i/100.0;
             int newStatus = (int) (md.getDuration() * seekFrac);
             md.seekTo(newStatus);
+            md.start();
         }
 
         @Override
@@ -140,18 +150,21 @@ public class PlayerActivity extends AppCompatActivity implements RadioGroup.OnCh
         int checkedButtonIndex = i - binding.radioSong1.getId();
         switch(checkedButtonIndex) {
             case 0:
+                binding.seekbarSongPosition.setProgress(0);
                 binding.imageviewAlbumCover.setImageResource(R.drawable.track1);
                 md.stop();
                 md = MediaPlayer.create(this, R.raw.track1);
                 md.start();
                 break;
             case 1:
+                binding.seekbarSongPosition.setProgress(0);
                 binding.imageviewAlbumCover.setImageResource(R.drawable.track2);
                 md.stop();
                 md = MediaPlayer.create(this, R.raw.track2);
                 md.start();
                 break;
             case 2:
+                binding.seekbarSongPosition.setProgress(0);
                 binding.imageviewAlbumCover.setImageResource(R.drawable.track3);
                 md.stop();
                 md = MediaPlayer.create(this, R.raw.track3);
@@ -170,44 +183,63 @@ public class PlayerActivity extends AppCompatActivity implements RadioGroup.OnCh
                     newNumVotes = Integer.valueOf(binding.textviewNumVotes1.getText().toString()) + 1;
                     if(newNumVotes>1)
                     {
-                        newAverage = ((binding.progressbarAverageRating1.getProgress() * Integer.valueOf(binding.textviewNumVotes1.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
+//                        newAverage = ((binding.progressbarAverageRating1.getProgress() * Integer.valueOf(binding.textviewNumVotes1.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
+//                        AVERAGE_RATING_TRACK1 = Math.round(((AVERAGE_RATING_TRACK1 * Integer.valueOf(binding.textviewNumVotes1.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes);
+                        AVERAGE_RATING_TRACK1 = ((AVERAGE_RATING_TRACK1 * Integer.valueOf(binding.textviewNumVotes1.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
+
                     }
                     else
                     {
-                        newAverage = binding.ratingbarVoterRating.getProgress();
+//                        newAverage = binding.ratingbarVoterRating.getProgress();
+//                        AVERAGE_RATING_TRACK1 = Math.round(binding.ratingbarVoterRating.getProgress());
+                        AVERAGE_RATING_TRACK1 = binding.ratingbarVoterRating.getProgress();
                     }
                     binding.textviewNumVotes1.setText(String.valueOf(newNumVotes));
-                    binding.progressbarAverageRating1.setProgress(newAverage);
+                    binding.progressbarAverageRating1.setProgress(Math.round(AVERAGE_RATING_TRACK1));
+                    Log.d("vidit", String.valueOf(AVERAGE_RATING_TRACK1));
                     break;
                 case R.id.radio_song2:
                     newNumVotes = Integer.valueOf(binding.textviewNumVotes2.getText().toString()) + 1;
                     if(newNumVotes>1)
                     {
-                        newAverage = ((binding.progressbarAverageRating2.getProgress() * Integer.valueOf(binding.textviewNumVotes2.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
+//                        newAverage = ((binding.progressbarAverageRating2.getProgress() * Integer.valueOf(binding.textviewNumVotes2.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
+//                        AVERAGE_RATING_TRACK2 = Math.round(((AVERAGE_RATING_TRACK2 * Integer.valueOf(binding.textviewNumVotes1.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes);
+                        AVERAGE_RATING_TRACK2 = ((AVERAGE_RATING_TRACK2 * Integer.valueOf(binding.textviewNumVotes1.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
                     }
                     else
                     {
-                        newAverage = binding.ratingbarVoterRating.getProgress();
+//                        newAverage = binding.ratingbarVoterRating.getProgress();
+//                        AVERAGE_RATING_TRACK2 = Math.round(binding.ratingbarVoterRating.getProgress());
+                        AVERAGE_RATING_TRACK2 = binding.ratingbarVoterRating.getProgress();
                     }
                     binding.textviewNumVotes2.setText(String.valueOf(newNumVotes));
-                    binding.progressbarAverageRating2.setProgress(newAverage);
+//                    binding.progressbarAverageRating2.setProgress(newAverage);
+                    binding.progressbarAverageRating2.setProgress(Math.round(AVERAGE_RATING_TRACK2));
+                    Log.d("vidit", String.valueOf(AVERAGE_RATING_TRACK2));
+
                     break;
                 case R.id.radio_song3:
                     newNumVotes = Integer.valueOf(binding.textviewNumVotes3.getText().toString()) + 1;
                     if(newNumVotes>1)
                     {
-                        newAverage = ((binding.progressbarAverageRating3.getProgress() * Integer.valueOf(binding.textviewNumVotes3.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
+//                        newAverage = ((binding.progressbarAverageRating3.getProgress() * Integer.valueOf(binding.textviewNumVotes3.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
+//                        AVERAGE_RATING_TRACK3 = Math.round(((AVERAGE_RATING_TRACK3 * Integer.valueOf(binding.textviewNumVotes1.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes);
+                        AVERAGE_RATING_TRACK3 = ((AVERAGE_RATING_TRACK3 * Integer.valueOf(binding.textviewNumVotes1.getText().toString())) + binding.ratingbarVoterRating.getProgress()) / newNumVotes;
+
                     }
                     else
                     {
-                        newAverage = binding.ratingbarVoterRating.getProgress();
+//                        newAverage = binding.ratingbarVoterRating.getProgress();
+//                        AVERAGE_RATING_TRACK3 = Math.round(binding.ratingbarVoterRating.getProgress());
+                        AVERAGE_RATING_TRACK3 = binding.ratingbarVoterRating.getProgress();
                     }
 
                     binding.textviewNumVotes3.setText(String.valueOf(newNumVotes));
-                    binding.progressbarAverageRating3.setProgress(newAverage);
+//                    binding.progressbarAverageRating3.setProgress(newAverage);
+                    binding.progressbarAverageRating3.setProgress(Math.round(AVERAGE_RATING_TRACK3));
+                    Log.d("vidit", String.valueOf(AVERAGE_RATING_TRACK3));
                     break;
             }
-            Log.d("vidit", String.valueOf(newAverage));
             binding.ratingbarVoterRating.setRating(0.0f);
         }
     };
